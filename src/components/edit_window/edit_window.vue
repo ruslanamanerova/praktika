@@ -3,31 +3,34 @@ import InputText from "primevue/inputtext";
 import DatePicker from "primevue/datepicker";
 import FloatLabel from "primevue/floatlabel";
 import Textarea from "primevue/textarea";
-import { ref } from "vue";
-import { card, loadCards } from "../storages/local_storage";
 import moment from "moment";
+import { ref } from "vue";
+import { CARD } from "../storages/local_storage";
 
-const emits = defineEmits(["close_window", "add_card"]);
+const props = defineProps<{
+  whatCardEdited: CARD
+}>()
 
-const cards = ref(loadCards());
-const name = ref(card.name);
-const date = ref(card.date);
-const time = ref(card.time);
-const description = ref(card.description);
-const card_id = ref(cards.value.length);
+const emits = defineEmits(["close_window", "edit_card"]);
+
+const name = ref(props.whatCardEdited?.name);
+const date = ref(props.whatCardEdited?.date);
+const time = ref(props.whatCardEdited?.time);
+const description = ref(props.whatCardEdited?.description);
+
 
 const save_data = () => {
   if(name.value != '' && time.value != ''){
     const newCard = {
     name: name.value,
-    date: date.value === card.date ? card.date : moment(date.value).format('DD/MM/YY'),
-    time: time.value === card.time ? card.time : moment(time.value).format('HH:mm'),
+    date: date.value === props.whatCardEdited.date ? props.whatCardEdited?.date : moment(date.value).format('MM/DD/YY'),
+    time: time.value === props.whatCardEdited.time ? props.whatCardEdited?.time : moment(time.value).format('HH:mm'),
     description: description.value,
-    step: 0,
-    id: card_id.value + 1,
+    step: props.whatCardEdited?.step,
+    id: props.whatCardEdited?.id,
   };
   emits("close_window");
-  emits("add_card", newCard);
+  emits("edit_card", props.whatCardEdited?.id, newCard);
   }
 
 };

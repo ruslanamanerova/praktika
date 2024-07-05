@@ -1,8 +1,9 @@
 import { ref } from "vue";
-interface CARD {
+import moment, { Moment } from "moment";
+export interface CARD {
   id: number;
   name: string;
-  date: Date;
+  date: string;
   time: string;
   description: string;
   step: number;
@@ -11,8 +12,8 @@ interface CARD {
 export const card: CARD = {
   id: 0,
   name: '',
-  date: new Date(),
-  time: '',
+  date: moment().format('DD/MM/YY'),
+  time: moment().format('HH:mm'),
   description: '',
   step: 0
 }

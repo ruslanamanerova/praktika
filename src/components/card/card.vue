@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import moment from 'moment';
-import { cards, saveCards, loadCards } from '../storages/local_storage'
 
 const props = defineProps<{
   title: string
@@ -11,7 +10,7 @@ const props = defineProps<{
 }>()
 const emits = defineEmits(['update_step', 'delete_card'])
 
-const card_time = moment(props.time)
+const card_time = moment(props.time).format('HH:mm')
 
 const arrow_click = () => {
   const new_step = ref(props.card_step)
@@ -24,7 +23,7 @@ const arrow_click = () => {
   <div class="card" :class="{first_step: card_step===0, sec_step: card_step===1, third_step: card_step===2}">
     <div class="text_block">
       <div class="title">{{ title }}</div>
-      <div class="date">{{ card_time.format('HH:mm') }}</div>
+      <div class="date">{{ props.time }}</div>
     </div>
     <div class="icons">
       <svg

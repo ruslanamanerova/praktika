@@ -2,6 +2,7 @@
 import InputText from "primevue/inputtext";
 import { Card } from "./components/card";
 import { Add_Window } from "./components/add_window";
+import { Edit_Window } from "./components/edit_window";
 import { ref, watch } from "vue";
 import { loadDeskUser, saveCards, loadCards,  saveDeskUser } from "./components/storages/local_storage";
 
@@ -34,8 +35,8 @@ function updateCard(cardId, newStep) {
     cards.value.splice(cardIndex, 1, updatedCard);
     saveCards(cards.value);
   }
-  console.log(cards.value);
 }
+
 function delete_card(cardId) {
   const cardIndex = cards.value.findIndex((c) => c.id === cardId);
   if (cardIndex !== -1) {
@@ -46,9 +47,28 @@ function delete_card(cardId) {
 function add_card(newCard) {
   cards.value.push(newCard);
   saveCards(cards.value);
-  console.log(newCard);
 }
 
+// Edit_Window
+const isEditMode = ref(false)
+const whatCardEdited = ref()
+const makeEdits = (card_id) => {
+  whatCardEdited.value = cards.value.find((c) => c?.id === card_id)
+  isEditMode.value = true
+}
+const closeEditMode = () => {
+  whatCardEdited.value = ''
+  isEditMode.value = false
+}
+function editCard(card_id, editedCard) {
+  const cardIndex = cards.value.findIndex((c) => c?.id === card_id);
+  if (cardIndex !== -1) {
+    cards.value[cardIndex] = editedCard;
+    // cards.value.splice(cardIndex, 1, cards.value[cardIndex]);
+    saveCards(cards.value);
+    closeEditMode()
+  }
+}
 </script>
 
 <template>
@@ -65,13 +85,14 @@ function add_card(newCard) {
             v-for="(card, index) in cards"
             :key="index"
             class="card"
-            :class="{ hidden: card.step != 0 }"
-            :title="card.name"
-            :time="card.time"
-            :card_step="card.step"
-            :id="card.id"
+            :class="{ hidden: card?.step != 0 }"
+            :title="card?.name"
+            :time="card?.time"
+            :card_step="card?.step"
+            :id="card?.id"
             @update_step="(cardId, newStep) => updateCard(cardId, newStep)"
             @delete_card="(cardId) => delete_card(cardId)"
+            @dblclick="makeEdits(card?.id)"
           />
         </div>
       </div>
@@ -83,13 +104,14 @@ function add_card(newCard) {
             v-for="(card, index) in cards"
             :key="index"
             class="card"
-            :class="{ hidden: card.step != 1 }"
-            :title="card.name"
-            :time="card.time"
-            :card_step="card.step"
-            :id="card.id"
+            :class="{ hidden: card?.step != 1 }"
+            :title="card?.name"
+            :time="card?.time"
+            :card_step="card?.step"
+            :id="card?.id"
             @update_step="(cardId, newStep) => updateCard(cardId, newStep)"
             @delete_card="(cardId) => delete_card(cardId)"
+            @dblclick="makeEdits(card?.id)"
           />
         </div>
       </div>
@@ -101,13 +123,14 @@ function add_card(newCard) {
             v-for="(card, index) in cards"
             :key="index"
             class="card"
-            :class="{ hidden: card.step != 2 }"
-            :title="card.name"
-            :time="card.time"
-            :card_step="card.step"
-            :id="card.id"
+            :class="{ hidden: card?.step != 2 }"
+            :title="card?.name"
+            :time="card?.time"
+            :card_step="card?.step"
+            :id="card?.id"
             @update_step="(cardId, newStep) => updateCard(cardId, newStep)"
             @delete_card="(cardId) => delete_card(cardId)"
+            @dblclick="makeEdits(card?.id)"
           />
         </div>
       </div>
@@ -118,6 +141,12 @@ function add_card(newCard) {
     v-if="isWindowOpened"
     @close_window="close_window()"
     @add_card="add_card"
+  />
+  <Edit_Window
+  v-if="isEditMode"
+  :whatCardEdited="whatCardEdited"
+  @close_window="closeEditMode"
+  @edit_card="editCard"
   />
 </template>
 
